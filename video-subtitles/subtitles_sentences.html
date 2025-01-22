@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence and Word Highlighting</title>
+    <style>
+        #subtitleScript {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 18px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .subtitle-word.highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <video id="videoPlayer" width="640" height="360" controls>
+        <source src="video.mp4" type="video/mp4">
+        <track id="subtitleTrack" src="subtitles_sentences.vtt" kind="subtitles" srclang="en" label="English" default>
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="subtitleScript">
+        <p id="fullScript"></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vtt.js/0.13.0/vtt.min.js"></script>
+    <script>
+        const video = document.getElementById('videoPlayer');
+        const track = video.textTracks[0]; // Get the first text track
+        const fullScript = document.getElementById('fullScript');
+
+        track.mode = 'hidden'; // Hide the track from default display
+
+        // Fetch and parse the VTT file for word-level highlighting
+        fetch('subtitles_sentences.vtt')
+            .then((response) => response.text())
+            .then((vttText) => {
+                const parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+
+                parser.oncue = (cue) => {
+                    const words = cue.text.split(' ');
+                    const startTime = cue.startTime;
+                    const endTime = cue.endTime;
+                    const duration = (endTime - startTime) / words.length;
+
+                    words.forEach((word, index) => {
+                        const span = document.createElement('span');
+                        span.className = 'subtitle-word';
+                        span.dataset.start = startTime + index * duration;
+                        span.dataset.end = startTime + (index + 1) * duration;
+                        span.textContent = word + ' ';
+                        fullScript.appendChild(span);
+                    });
+
+                    const br = document.createElement('br');
+                    fullScript.appendChild(br); // Add a break after each sentence
+                };
+
+                parser.parse(vttText);
+                parser.flush();
+            });
+
+        // Highlight the active word
+        video.addEventListener('timeupdate', () => {
+            const currentTime = video.currentTime;
+            const spans = document.querySelectorAll('.subtitle-word');
+            spans.forEach((span) => {
+                const start = parseFloat(span.dataset.start);
+                const end = parseFloat(span.dataset.end);
+
+                if (currentTime >= start && currentTime <= end) {
+                    span.classList.add('highlight');
+                } else {
+                    span.classList.remove('highlight');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

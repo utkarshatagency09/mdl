@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video</title>
+  </head>
+  <body>
+    <video id="videoPlayer" width="640" height="360" controls>
+        <source src="video.mp4" type="video/mp4">
+        <!-- Default subtitle track -->
+        <track id="subtitleTrack" src="subtitles1.vtt" kind="subtitles" srclang="en" label="English" default>
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Display the whole script -->
+    <div id="subtitleScript" onclick="toggleScriptDisplay()">
+        <p id="fullScript">
+            <span class="subtitle-word" data-time="1">Welcome</span> 
+            <span class="subtitle-word" data-time="5">to</span> 
+            <span class="subtitle-word" data-time="10">the</span> 
+            <span class="subtitle-word" data-time="15">video</span> 
+            <span class="subtitle-word" data-time="20">introduction</span>
+            <!-- Add all your subtitle words here with data-time -->
+        </p>
+    </div>
+
+    <audio id="audioPlayer" controls preload="auto" style="display: none;">
+        <source src="audio1.mp3" type="audio/mp3">
+    </audio>
+
+    <select id="audioSelector">
+        <option value="audio1.mp3" data-subtitle="subtitles1.vtt">Audio Track 1</option>
+        <option value="audio2.mp3" data-subtitle="subtitles2.vtt">Audio Track 2</option>
+        <option value="audio3.mp3" data-subtitle="subtitles3.vtt">Audio Track 3</option>
+    </select>
+    <button onclick="toggleScriptDisplay()">Show / Hide Script</button>
+    <script>
+    const video = document.getElementById('videoPlayer');
+    const audio = document.getElementById('audioPlayer');
+    const audioSelector = document.getElementById('audioSelector');
+    const subtitleTrack = document.querySelector('#subtitleTrack');
+    const fullScript = document.getElementById('fullScript');
+    const subtitleWords = document.querySelectorAll('.subtitle-word');
+    let lastHighlightedIndex = -1;
+
+    // Toggle display of the full script
+    function toggleScriptDisplay() {
+        const script = document.getElementById('subtitleScript');
+        if (script.style.display === "none" || script.style.display === "") {
+            script.style.display = "block";
+        } else {
+            script.style.display = "none";
+        }
+    }
+
+    // Sync the highlighting of the words with video time
+    function highlightCurrentWord() {
+        const currentTime = video.currentTime;
+
+        subtitleWords.forEach((word, index) => {
+            const wordTime = parseFloat(word.getAttribute('data-time'));
+            const nextWordTime = parseFloat(subtitleWords[index + 1]?.getAttribute('data-time')) || Infinity;
+
+            if (currentTime >= wordTime && currentTime < nextWordTime) {
+                if (lastHighlightedIndex !== index) {
+                    subtitleWords[lastHighlightedIndex]?.classList.remove('highlight');
+                    word.classList.add('highlight');
+                    lastHighlightedIndex = index;
+                }
+            }
+        });
+    }
+
+    // Sync audio playback time with video playback time
+    video.addEventListener('timeupdate', () => {
+        if (Math.abs(audio.currentTime - video.currentTime) > 0.1) {
+            audio.currentTime = video.currentTime;
+        }
+        highlightCurrentWord();
+    });
+
+    // Function to change audio and subtitles
+    audioSelector.addEventListener('change', () => {
+        const selectedOption = audioSelector.options[audioSelector.selectedIndex];
+        const audioSrc = selectedOption.value;
+        const subtitleSrc = selectedOption.dataset.subtitle;
+    
+        // Update audio
+        audio.src = audioSrc;
+        audio.play();
+        video.play();
+    
+        // Update subtitles
+        if (subtitleTrack) {
+            subtitleTrack.src = subtitleSrc;
+            video.textTracks[0].mode = 'showing'; // Ensure subtitle is visible
+        } else {
+            console.error("Subtitle track not found.");
+        }
+    });
+
+    // Pause the audio when the video is paused
+    video.addEventListener('pause', () => {
+        audio.pause();
+    });
+    
+    // Play the audio when the video is played
+    video.addEventListener('play', () => {
+        audio.play();
+    });
+    </script>
+
+    <style>
+    /* Style for highlighted subtitles */
+    .highlight {
+        background-color: yellow;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Make the script container initially hidden */
+    #subtitleScript {
+        display: none;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 18px;
+        max-height: 200px;
+        overflow-y: scroll;
+    }
+    </style>
+</body>
+</html>

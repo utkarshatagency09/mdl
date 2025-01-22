@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video</title>
+    <style>
+        #subtitleScript {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 18px;
+            max-height: 200px;
+            overflow-y: scroll;
+        }
+        .subtitle-word.highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+        .script_container:not(:first-child) {
+            display: none;
+        }
+    </style>
+  </head>
+  <body>
+    <video id="videoPlayer" width="640" height="360" controls>
+        <source src="video.mp4" type="video/mp4">
+        <!-- Default subtitle track -->
+        <track id="subtitleTrack" src="audio1.vtt" kind="subtitles" srclang="en" label="English" default>
+        <track id="subtitleTrack" src="subtitles2.vtt" kind="subtitles" srclang="sp" label="Spanish">
+        <track id="subtitleTrack" src="subtitles3.vtt" kind="subtitles" srclang="gr" label="German">
+        Your browser does not support the video tag.
+    </video>
+    
+    <audio id="audioPlayer" controls preload="auto" style="display: none;">
+        <source src="audio1.mp3" type="audio/mp3">
+    </audio>
+    
+    <select id="audioSelector">
+        <option value="audio1.mp3" data-subtitle="audio1.vtt" data-scriptname="fullScript_1">Audio Track 1</option>
+        <option value="audio2.mp3" data-subtitle="subtitles2.vtt" data-scriptname="fullScript_2">Audio Track 2</option>
+        <option value="audio3.mp3" data-subtitle="subtitles3.vtt" data-scriptname="fullScript_3">Audio Track 3</option>
+    </select>
+    
+    <div id="subtitleScript">
+        <p id="fullScript_1" class="script_container"></p>
+        <p id="fullScript_2" class="script_container"></p>
+        <p id="fullScript_3" class="script_container"></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vtt.js/0.13.0/vtt.min.js"></script>
+
+    <script>
+    const video = document.getElementById('videoPlayer');
+    const audio = document.getElementById('audioPlayer');
+    const audioSelector = document.getElementById('audioSelector');
+    const subtitleTrack = document.querySelector('#subtitleTrack'); // Ensure subtitleTrack is fetched correctly
+
+    const track_1 = video.textTracks[0]; // Get the first text track
+    const track_2 = video.textTracks[1]; // Get the second text track
+    const track_3 = video.textTracks[2]; // Get the third text track
+    const fullScript_1 = document.getElementById('fullScript_1');
+    const fullScript_2 = document.getElementById('fullScript_2');
+    const fullScript_3 = document.getElementById('fullScript_3');
+
+    track_1.mode = 'hidden'; // Make the track available programmatically but not visible
+    track_2.mode = 'hidden'; // Make the track available programmatically but not visible
+    track_3.mode = 'hidden'; // Make the track available programmatically but not visible
+
+    // Fetch and parse the VTT file
+    fetch('audio1.vtt')
+        .then((response) => response.text())
+        .then((vttText) => {
+            const parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+            
+            // Handle each cue
+            parser.oncue = (cue) => {
+                const words = cue.text.split(' ');
+                words.forEach((word) => {
+                    const span = document.createElement('span');
+                    span.className = 'subtitle-word';
+                    span.dataset.start = cue.startTime;
+                    span.dataset.end = cue.endTime;
+                    span.textContent = word + ' ';
+                    fullScript_1.appendChild(span);
+                });
+            };
+
+            // Parse the VTT text
+            parser.parse(vttText);
+            parser.flush();
+        });
+
+    // Highlight the active subtitle word
+    track_1.addEventListener('cuechange', () => {
+        const activeCue = track_1.activeCues[0]; // Get the currently active cue
+
+        if (activeCue) {
+            const spans = document.querySelectorAll('.subtitle-word');
+            spans.forEach((span) => {
+                span.classList.remove('highlight');
+            });
+
+            // Highlight the active word(s) based on the cue's time
+            const activeSpans = Array.from(document.querySelectorAll('.subtitle-word')).filter(
+                (span) => parseFloat(span.dataset.start) <= video.currentTime && parseFloat(span.dataset.end) >= video.currentTime
+            );
+
+            activeSpans.forEach((span) => {
+                span.classList.add('highlight');
+            });
+        }
+    });
+    
+    // Fetch and parse the VTT file
+    fetch('subtitles2.vtt')
+        .then((response) => response.text())
+        .then((vttText) => {
+            const parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+            
+            // Handle each cue
+            parser.oncue = (cue) => {
+                const words = cue.text.split(' ');
+                words.forEach((word) => {
+                    const span = document.createElement('span');
+                    span.className = 'subtitle-word';
+                    span.dataset.start = cue.startTime;
+                    span.dataset.end = cue.endTime;
+                    span.textContent = word + ' ';
+                    fullScript_2.appendChild(span);
+                });
+            };
+
+            // Parse the VTT text
+            parser.parse(vttText);
+            parser.flush();
+        });
+
+    // Highlight the active subtitle word
+    track_2.addEventListener('cuechange', () => {
+        const activeCue = track_2.activeCues[0]; // Get the currently active cue
+
+        if (activeCue) {
+            const spans = document.querySelectorAll('.subtitle-word');
+            spans.forEach((span) => {
+                span.classList.remove('highlight');
+            });
+
+            // Highlight the active word(s) based on the cue's time
+            const activeSpans = Array.from(document.querySelectorAll('.subtitle-word')).filter(
+                (span) => parseFloat(span.dataset.start) <= video.currentTime && parseFloat(span.dataset.end) >= video.currentTime
+            );
+
+            activeSpans.forEach((span) => {
+                span.classList.add('highlight');
+            });
+        }
+    });
+
+    // Fetch and parse the VTT file
+    fetch('subtitles3.vtt')
+        .then((response) => response.text())
+        .then((vttText) => {
+            const parser = new WebVTT.Parser(window, WebVTT.StringDecoder());
+            
+            // Handle each cue
+            parser.oncue = (cue) => {
+                const words = cue.text.split(' ');
+                words.forEach((word) => {
+                    const span = document.createElement('span');
+                    span.className = 'subtitle-word';
+                    span.dataset.start = cue.startTime;
+                    span.dataset.end = cue.endTime;
+                    span.textContent = word + ' ';
+                    fullScript_3.appendChild(span);
+                });
+            };
+
+            // Parse the VTT text
+            parser.parse(vttText);
+            parser.flush();
+        });
+
+    // Highlight the active subtitle word
+    track_3.addEventListener('cuechange', () => {
+        const activeCue = track_3.activeCues[0]; // Get the currently active cue
+
+        if (activeCue) {
+            const spans = document.querySelectorAll('.subtitle-word');
+            spans.forEach((span) => {
+                span.classList.remove('highlight');
+            });
+
+            // Highlight the active word(s) based on the cue's time
+            const activeSpans = Array.from(document.querySelectorAll('.subtitle-word')).filter(
+                (span) => parseFloat(span.dataset.start) <= video.currentTime && parseFloat(span.dataset.end) >= video.currentTime
+            );
+
+            activeSpans.forEach((span) => {
+                span.classList.add('highlight');
+            });
+        }
+    });
+
+    // Function to change audio and subtitles
+    audioSelector.addEventListener('change', () => {
+        const selectedOption = audioSelector.options[audioSelector.selectedIndex];
+        const audioSrc = selectedOption.value;
+        const subtitleSrc = selectedOption.dataset.subtitle;
+        const scriptname = selectedOption.dataset.scriptname;
+    
+        // Update audio
+        audio.src = audioSrc;
+        audio.play();
+        video.play();
+    
+        
+        var elements = document.getElementsByClassName('script_container');
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.display = 'none';
+        }
+        document.getElementById(scriptname).style.display='block';
+
+        // Update subtitles
+        if (subtitleTrack) {
+            subtitleTrack.src = subtitleSrc;
+            video.textTracks[0].mode = 'showing'; // Ensure subtitle is visible
+        } else {
+            console.error("Subtitle track not found.");
+        }
+    });
+      
+    // Sync audio playback time with video playback time
+    video.addEventListener('timeupdate', () => {
+        if (Math.abs(audio.currentTime - video.currentTime) > 0.1) {
+            audio.currentTime = video.currentTime;
+        }
+    });
+    
+    // Pause the audio when the video is paused
+    video.addEventListener('pause', () => {
+        audio.pause();
+    });
+    
+    // Play the audio when the video is played
+    video.addEventListener('play', () => {
+        audio.play();
+    });
+    </script>
+    
+  </body>
+</html>

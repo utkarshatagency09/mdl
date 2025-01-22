@@ -1,0 +1,27 @@
+1
+00:00:01,000 --> 00:00:05,000
+Welcome to the video introduction!
+
+2
+00:00:06,000 --> 00:00:10,000
+Here, you'll learn something exciting.
+
+3
+00:00:11,000 --> 00:00:15,000
+Pay attention to the details shared here.
+
+4
+00:00:20,000 --> 00:00:25,000
+The next section will showcase some examples.
+
+5
+00:00:30,000 --> 00:00:35,000
+Feel free to pause and replay if needed.
+
+6
+00:00:40,000 --> 00:00:45,000
+Don’t forget to check the resources linked below.
+
+7
+00:00:50,000 --> 00:00:58,000
+Thank you for watching! We hope you enjoyed it.

@@ -1,0 +1,31 @@
+<video id="videoPlayer" width="640" height="360" controls>
+    <source src="output.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+<select id="audioSelector">
+    <option value="0">English</option>
+    <option value="1">Spanish</option>
+</select>
+
+<script>
+const video = document.getElementById('videoPlayer');
+const audioSelector = document.getElementById('audioSelector');
+
+// Switch audio by reloading the video with the selected audio track
+audioSelector.addEventListener('change', () => {
+    const selectedTrack = parseInt(audioSelector.value, 10);
+    const currentTime = video.currentTime;
+    const isPlaying = !video.paused;
+
+    // Update the video source with the selected audio track
+    video.innerHTML = `
+        <source src="output.mp4#audio=${selectedTrack}" type="video/mp4">
+    `;
+
+    // Reload video and restore playback state
+    video.load();
+    video.currentTime = currentTime;
+    if (isPlaying) video.play();
+});
+</script>

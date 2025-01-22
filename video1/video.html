@@ -1,0 +1,43 @@
+<video id="videoPlayer" width="640" height="360" controls>
+    <source src="video.mp4" type="video/mp4">
+</video>
+
+<audio id="audioPlayer" controls preload="auto" style="display: none;">
+    <source src="audio1.mp3" type="audio/mp3">
+</audio>
+
+<select id="audioSelector">
+    <option value="audio1.mp3">Audio Track 1</option>
+    <option value="audio2.mp3">Audio Track 2</option>
+    <option value="audio3.mp3">Audio Track 3</option>
+</select>
+<script>
+const video = document.getElementById('videoPlayer');
+const audio = document.getElementById('audioPlayer');
+const audioSelector = document.getElementById('audioSelector');
+
+// Sync the selected audio with the video
+audioSelector.addEventListener('change', () => {
+    audio.src = audioSelector.value;
+    audio.play();
+    video.play();
+});
+
+// Sync audio playback time with video playback time
+video.addEventListener('timeupdate', () => {
+    if (Math.abs(audio.currentTime - video.currentTime) > 0.1) {
+        audio.currentTime = video.currentTime;
+    }
+});
+
+// Pause the audio when the video is paused
+video.addEventListener('pause', () => {
+    audio.pause();
+});
+
+// Play the audio when the video is played
+video.addEventListener('play', () => {
+    audio.play();
+});
+
+</script>
