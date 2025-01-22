@@ -62,6 +62,9 @@
             <button id="playPauseBtn">Play</button>
             <input type="range" id="seeker" min="0" max="100" value="0">
             <button id="audioToggleBtn">Mute</button>
+            <button id="volumeDownBtn">Volume Down</button>
+            <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1">
+            <button id="volumeUpBtn">Volume Up</button>
             <span id="timeDisplay">0:00 / 0:00</span>
         </div>
     </div>
@@ -187,6 +190,9 @@
     const playPauseBtn = document.getElementById('playPauseBtn');
     const seeker = document.getElementById('seeker');
     const audioToggleBtn = document.getElementById('audioToggleBtn');
+    const volumeControl = document.getElementById('volumeControl');
+    const volumeDownBtn = document.getElementById('volumeDownBtn');
+    const volumeUpBtn = document.getElementById('volumeUpBtn');
     const timeDisplay = document.getElementById('timeDisplay');
 
     // Play/Pause functionality
@@ -239,6 +245,7 @@
     // Audio toggle functionality
     audioToggleBtn.addEventListener('click', () => {
         video.muted = !video.muted;
+        audio.muted = !audio.muted;
         audioToggleBtn.textContent = video.muted ? "Unmute" : "Mute";
 
         // Optionally, you can also check the state of audio and give feedback (like updating the button style or icon)
@@ -246,6 +253,27 @@
             audioToggleBtn.style.backgroundColor = "red";  
         } else {
             audioToggleBtn.style.backgroundColor = "";  
+        }
+    });
+
+    // Volume control slider functionality
+    volumeControl.addEventListener('input', () => {
+        video.volume = volumeControl.value;
+    });
+
+    // Volume down functionality
+    volumeDownBtn.addEventListener('click', () => {
+        if (video.volume > 0.1) {
+            video.volume -= 0.1; // Decrease volume by 10%
+            volumeControl.value = video.volume; // Update the volume slider position
+        }
+    });
+
+    // Volume up functionality
+    volumeUpBtn.addEventListener('click', () => {
+        if (video.volume < 1) {
+            video.volume += 0.1; // Increase volume by 10%
+            volumeControl.value = video.volume; // Update the volume slider position
         }
     });
 
