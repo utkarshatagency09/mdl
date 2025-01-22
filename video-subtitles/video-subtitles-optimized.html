@@ -49,12 +49,12 @@
   </head>
   <body>
     <div id="videoContainer">
-        <video id="videoPlayer" width="640" height="360" disablePictureInPicture>
+        <video id="videoPlayer" width="640" height="360" controls disablePictureInPicture>
             <source src="video.mp4" type="video/mp4">
             <!-- Default subtitle track -->
-            <track class="subtitleTrack" src="audio1.vtt" kind="subtitles" srclang="en" label="English" default>
-            <track class="subtitleTrack" src="subtitles2.vtt" kind="subtitles" srclang="sp" label="Spanish">
-            <track class="subtitleTrack" src="subtitles3.vtt" kind="subtitles" srclang="gr" label="German">
+            <track class="subtitleTrack" src="audio1.vtt" kind="metadata" srclang="en" label="English" default>
+            <track class="subtitleTrack" src="subtitles2.vtt" kind="metadata" srclang="sp" label="Spanish">
+            <track class="subtitleTrack" src="subtitles3.vtt" kind="metadata" srclang="gr" label="German">
             Your browser does not support the video tag.
         </video>
 
